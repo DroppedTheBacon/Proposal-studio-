@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Proposal Studio</title>
+<link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<div id="root" class="app">
+<aside class="sidebar dashboard-ui">
+  <div class="brand"><div class="brandmark">PS</div><div><h1>Proposal Studio</h1><p>Personalised vehicle proposals</p></div></div>
+  <div class="nav">
+    <button id="navDash" class="active">Dashboard</button>
+    <button id="navCreate">Create Proposal</button>
+    <button id="navParser">Parser Test</button>
+    <button id="navSettings">Settings</button>
+  </div>
+</aside>
+<main class="main">
+<section id="dashboard" class="dashboard-ui">
+  <div class="topbar"><div><h2>Proposals</h2><div class="muted">Create, publish and manage customer proposals.</div></div><button class="btn primary" id="createTop">Create Proposal</button></div>
+  <div class="stats">
+    <div class="stat"><div class="k" id="sTotal">0</div><div class="l">Total proposals</div></div>
+    <div class="stat"><div class="k" id="sPublished">0</div><div class="l">Published</div></div>
+    <div class="stat"><div class="k" id="sViewed">0</div><div class="l">Viewed</div></div>
+    <div class="stat"><div class="k" id="sResponded">0</div><div class="l">Customer responded</div></div>
+  </div>
+  <div class="panel table-wrap"><table class="proposal-list"><thead><tr><th>Customer</th><th>Vehicle</th><th>Driveaway</th><th>Status</th><th>Engagement</th><th>Updated</th><th></th></tr></thead><tbody id="proposalRows"></tbody></table></div>
+</section>
+
+<section id="wizard" class="wizard dashboard-ui hidden">
+  <div class="topbar"><div><h2 id="wizardTitle">Create Proposal</h2><div id="wizardSub" class="muted">PDF quote → review → draft → preview → publish.</div></div><button class="btn ghost" id="backDash">Back</button></div>
+  <div class="steps"><div class="step active" data-step="1">1. Upload</div><div class="step" data-step="2">2. Review</div><div class="step" data-step="3">3. Preview Draft</div><div class="step" data-step="4">4. Publish</div></div>
+  <div id="step1" class="panel">
+    <div id="drop" class="drop"><h3>Upload your dealership quote</h3><p>We'll extract the quote, flag uncertain fields and build an editable draft.</p><button class="btn primary" id="chooseFile">Choose PDF</button><input id="fileInput" type="file" accept="application/pdf" hidden><div class="fileline" id="fileLine">PDF files only</div></div>
+    <div class="actions"><button class="btn secondary" id="demoBtn">Use demo quote</button></div>
+  </div>
+  <div id="step2" class="panel hidden">
+    <div id="reviewAlert" class="review-alert hidden"></div>
+    <div class="actions" style="justify-content:flex-start;margin-top:0"><button class="btn secondary small" id="toggleOriginal">View Original Quote</button></div>
+    <div id="reviewLayout" class="compare-grid" style="grid-template-columns:1fr">
+      <div>
+        <div class="section-title">Customer Details</div>
+        <div class="form-grid">
+          <div class="field"><label>Customer name <span id="conf-customerName" class="confidence"></span></label><input id="customerName"></div>
+          <div class="field"><label>Email <span id="conf-customerEmail" class="confidence"></span></label><input id="customerEmail"></div>
+          <div class="field"><label>Quote number <span id="conf-quoteNo" class="confidence"></span></label><input id="quoteNo"></div>
+          <div class="field"><label>Quote date <span id="conf-quoteDate" class="confidence"></span></label><input id="quoteDate"></div>
+        </div>
+        <div class="section-title">Vehicle Details</div>
+        <div class="form-grid">
+          <div class="field"><label>Make <span id="conf-make" class="confidence"></span></label><input id="make"></div>
+          <div class="field"><label>Model code <span id="conf-modelCode" class="confidence"></span></label><input id="modelCode"></div>
+          <div class="field full"><label>Model name / vehicle <span id="conf-vehicle" class="confidence"></span></label><input id="vehicle"></div>
+          <div class="field"><label>Body type <span id="conf-bodyType" class="confidence"></span></label><input id="bodyType"></div>
+          <div class="field"><label>Stock number <span id="conf-stockNo" class="confidence"></span></label><input id="stockNo"></div>
+          <div class="field"><label>Colour <span id="conf-colour" class="confidence"></span></label><input id="colour"></div>
+          <div class="field"><label>Engine</label><input id="engine"></div>
+          <div class="field"><label>Transmission</label><input id="transmission"></div>
+        </div>
+        <div class="section-title">Vehicle Presentation</div>
+        <div class="form-grid">
+          <div class="field full"><label>Main vehicle image</label><div class="image-picker"><div id="imageThumb" class="thumb">No image</div><button class="btn secondary small" id="pickImage">Upload image</button><input id="imageInput" type="file" accept="image/*" hidden><button class="btn ghost small" id="clearImage">Clear</button></div></div>
+          <div class="field full"><label>Feature cards (Title | Description, one per line)</label><textarea id="features"></textarea></div>
+        </div>
+        <div class="section-title">Pricing</div>
+        <div class="form-grid">
+          <div class="field"><label>Sale Price (Inc GST) <span id="conf-salePrice" class="confidence"></span></label><input id="salePrice" type="number" step="0.01"></div>
+          <div class="field"><label>Dealer Delivery <span id="conf-dealerDelivery" class="confidence"></span></label><input id="dealerDelivery" type="number" step="0.01"></div>
+          <div class="field"><label>Sale Price Inc Acc & Opt <span id="conf-salePriceIncAccOpt" class="confidence"></span></label><input id="salePriceIncAccOpt" type="number" step="0.01"></div>
+          <div class="field"><label>Discount <span id="conf-discount" class="confidence"></span></label><input id="discount" type="number" step="0.01"></div>
+          <div class="field"><label>Sub Total Sale Price <span id="conf-subtotalSalePrice" class="confidence"></span></label><input id="subtotalSalePrice" type="number" step="0.01"></div>
+          <div class="field"><label>Registration <span id="conf-registration" class="confidence"></span></label><input id="registration" type="number" step="0.01"></div>
+          <div class="field"><label>Plate Fee</label><input id="plateFee" type="number" step="0.01"></div>
+          <div class="field"><label>Admin Fee</label><input id="adminFee" type="number" step="0.01"></div>
+          <div class="field"><label>CTP</label><input id="ctp" type="number" step="0.01"></div>
+          <div class="field"><label>Luxury Car Tax <span id="conf-lct" class="confidence"></span></label><input id="lct" type="number" step="0.01"></div>
+          <div class="field"><label>Stamp Duty <span id="conf-stampDuty" class="confidence"></span></label><input id="stampDuty" type="number" step="0.01"></div>
+          <div class="field"><label>Insurance</label><input id="insurance" type="number" step="0.01"></div>
+          <div class="field"><label>Drive Away <span id="conf-driveaway" class="confidence"></span></label><input id="driveaway" type="number" step="0.01"></div>
+          <div class="field"><label>Trade value <span id="conf-tradeValue" class="confidence"></span></label><input id="tradeValue" type="number" step="0.01"></div>
+          <div class="field"><label>Trade payout <span id="conf-tradePayout" class="confidence"></span></label><input id="tradePayout" type="number" step="0.01"></div>
+          <div class="field"><label>Deposit <span id="conf-deposit" class="confidence"></span></label><input id="deposit" type="number" step="0.01"></div>
+          <div class="field"><label>Changeover <span id="conf-changeover" class="confidence"></span></label><input id="changeover" type="number" step="0.01"></div>
+          <div class="field"><label>Add-ons / options total <span id="conf-accessoriesPrice" class="confidence"></span></label><input id="accessoriesPrice" type="number" step="0.01"></div>
+          <div class="field full"><label>Accessories / options (Description | Price, one per line) <span id="conf-accessories" class="confidence"></span></label><textarea id="accessories"></textarea></div>
+          <div class="field full"><label>Personal message</label><textarea id="personalMessage"></textarea></div>
+        </div>
+      </div>
+      <div id="originalPane" class="quote-viewer hidden"><div id="originalPdfHolder" class="raw-box">Upload a PDF to compare it here.</div></div>
+    </div>
+    <div class="actions"><button class="btn secondary" id="backUpload">Back</button><button class="btn secondary" id="saveDraft">Save Draft</button><button class="btn primary" id="toPreview">Preview Draft</button></div>
+  </div>
+  <div id="step3" class="hidden"><div class="preview-wrap"><div id="proposalPreview"></div></div><div class="actions"><button class="btn secondary" id="backReview">Edit Draft</button><button class="btn secondary" id="saveDraft2">Save Draft</button><button class="btn primary" id="toPublish">Publish</button></div></div>
+  <div id="step4" class="panel hidden">
+    <h3 style="margin-top:0">Publish proposal</h3><p class="muted">Publishing creates a new version while keeping the same customer URL.</p>
+    <div class="form-grid">
+      <div class="field full"><label>Private proposal link</label><input id="shareLink" readonly></div>
+      <div class="field"><label>Expiry date</label><input id="expiry" type="date"></div>
+      <div class="field"><label>Optional access PIN</label><input id="pin" placeholder="Optional"></div>
+      <div class="field"><label>Link status</label><select id="linkEnabled"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>
+      <div class="field"><label>Version note</label><input id="versionNote" placeholder="e.g. Added tow pack"></div>
+    </div>
+    <div class="actions"><button class="btn secondary" id="regenerateLink">Regenerate Link</button><button class="btn secondary" id="copyLink">Copy Link</button><button class="btn primary" id="publishNow">Publish Update</button></div>
+  </div>
+</section>
+
+<section id="parserTest" class="dashboard-ui hidden">
+  <div class="topbar"><div><h2>Parser Test</h2><div class="muted">Validate Knox Ford quote extraction before customer use.</div></div></div>
+  <div class="panel">
+    <div class="drop" id="parserDrop"><h3>Test a quote PDF</h3><p>View extracted fields, confidence, raw text and pricing reconciliation.</p><button class="btn primary" id="parserChoose">Choose PDF</button><input id="parserFile" type="file" accept="application/pdf" hidden></div>
+    <div id="parserResults" class="hidden" style="margin-top:18px"></div>
+  </div>
+</section>
+
+<section id="settings" class="dashboard-ui hidden">
+  <div class="topbar"><div><h2>Settings</h2><div class="muted">Consultant, privacy and proposal defaults.</div></div></div>
+  <div class="panel form-grid">
+    <div class="field"><label>Dealership</label><input id="setDealership"></div><div class="field"><label>Consultant</label><input id="setConsultant"></div><div class="field"><label>Job title</label><input id="setTitle"></div><div class="field"><label>Phone</label><input id="setPhone"></div><div class="field"><label>Email</label><input id="setEmail"></div><div class="field"><label>Default proposal validity (days)</label><input id="setValidity" type="number" min="0"></div>
+    <div class="field full"><label>Pricing / availability disclaimer</label><textarea id="setDisclaimer"></textarea></div><div class="field full"><label>Privacy notice</label><textarea id="setPrivacy"></textarea></div><div class="field full"><label>Finance disclaimer</label><textarea id="setFinance"></textarea></div>
+    <div class="field full"><div class="actions"><button id="saveSettings" class="btn primary">Save Settings</button></div></div>
+  </div>
+</section>
+
+<section id="customerView" class="customer-only"><div class="preview-wrap"><div id="customerProposal"></div></div></section>
+</main>
+</div>
+<div id="stickyCustomer" class="sticky-customer customer-only"><button class="btn primary" id="stickyHappy">I'm happy with this</button><button class="btn secondary" id="stickyChange">Make a change</button></div>
+<div id="modalLayer" class="hidden"></div><div id="toast" class="toast hidden"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="/app1.js"></script>
+<script src="/app2.js"></script>
+<script src="/app3.js"></script>
+</body>
+</html>
