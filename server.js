@@ -113,7 +113,7 @@ app.use(express.static(__dirname, { index: false }));
 app.get('*', (req, res) => {
   try {
     const file = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
-    const html = file.replace('</body>', '<script src="/app4.js"></script>\n</body>');
+    const html = file.replace('</body>', '<script src="/app4.js"></script>\n<script src="/app5.js"></script>\n</body>');
     res.type('html').send(html);
   } catch (err) {
     console.error('HTML serve error', err);
